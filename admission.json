@@ -1,0 +1,22 @@
+{
+  "admission_application": {
+    "status": "under_review",
+    "status_label": "Under Review",
+    "application_id_format": "RC-2026-XXXXX",
+    "steps": [
+      "Personal Details",
+      "Course Selection",
+      "Education Details",
+      "Contact Details",
+      "Account Creation",
+      "Review & Plan",
+      "Payment",
+      "Document Upload"
+    ],
+    "required_documents": [
+      "Identity Document",
+      "Education Certificate",
+      "Profile Photo"
+    ]
+  }
+}
