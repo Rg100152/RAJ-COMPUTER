@@ -1,0 +1,78 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "HTML & CSS",
+      "image": "html.png",
+      "description": "Modern responsive web layouts.",
+      "level": "Beginner",
+      "price": 199,
+      "progress": 72
+    },
+    {
+      "id": 2,
+      "title": "Python",
+      "image": "python.jpg",
+      "description": "Data Science & Automation.",
+      "level": "Intermediate",
+      "price": 199,
+      "progress": 85
+    },
+    {
+      "id": 3,
+      "title": "Shell Scripting",
+      "image": "shell script.jpg",
+      "description": "Master Linux terminal & automation.",
+      "level": "Advanced",
+      "price": 199,
+      "progress": 60
+    },
+    {
+      "id": 4,
+      "title": "C Programming",
+      "image": "c.png",
+      "description": "Master core programming logic.",
+      "level": "Beginner",
+      "price": 199,
+      "progress": 65
+    },
+    {
+      "id": 5,
+      "title": "Cyber Security",
+      "image": "cyber security.jpg",
+      "description": "Network & Ethical Hacking.",
+      "level": "Advanced",
+      "price": 599,
+      "progress": 90
+    },
+    {
+      "id": 6,
+      "title": "Reverse Engineering",
+      "image": "revers engineering.jpg",
+      "description": "Binary analysis & Software decoding.",
+      "level": "Advanced",
+      "price": 599,
+      "progress": 55
+    }
+  ],
+  "pricing_plans": [
+    {
+      "name": "BASIC",
+      "price": 199,
+      "features": ["Core Courses", "Basic Labs", "Certificates"],
+      "popular": false
+    },
+    {
+      "name": "PRO",
+      "price": 399,
+      "features": ["All Courses Access", "Advanced Cyber Labs", "Real-time Projects", "Priority Support"],
+      "popular": true
+    },
+    {
+      "name": "CYBER PRO",
+      "price": 599,
+      "features": ["Reverse Engineering", "Network Security", "Shell Mastery"],
+      "popular": false
+    }
+  ]
+}
