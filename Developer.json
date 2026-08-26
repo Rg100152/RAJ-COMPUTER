@@ -1,0 +1,19 @@
+{
+  "developer": {
+    "name": "Raj Computer",
+    "role": "Developer • Programmer • Tech Learner",
+    "quote": "Learning technology by building it.",
+    "bio": "Raj Computer is developed and maintained with a focus on programming, computer science, practical learning and modern technology. The platform is designed to help students learn by combining structured courses, interactive practice, projects and hands-on labs.",
+    "image": "profile.jpg",
+    "socials": {
+      "github": "https://github.com/Rg100152/RAJ-COMPUTER",
+      "projects": "#",
+      "contact": "#"
+    },
+    "tech_stack": ["HTML", "CSS", "JavaScript", "Python", "Java", "C", "C++", "Linux", "Cyber Security"],
+    "stats": {
+      "open_projects": 175,
+      "technologies_learning": 12
+    }
+  }
+}
