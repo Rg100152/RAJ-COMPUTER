@@ -1,0 +1,28 @@
+{
+  "software_lab": [
+    {
+      "id": 1,
+      "title": "Windows 11 Pro",
+      "image": "windows 11.png.jpg",
+      "description": "Advanced OS Setup & Config."
+    },
+    {
+      "id": 2,
+      "title": "Ghost OS",
+      "image": "ghost 11 interface.png.jpg",
+      "description": "Custom lightweight OS & Backups."
+    },
+    {
+      "id": 3,
+      "title": "HP Laptop Setup",
+      "image": "hp laptop.png.jpg",
+      "description": "Hardware & Driver Mastery."
+    },
+    {
+      "id": 4,
+      "title": "Dell Legacy",
+      "image": "Dell old.png.jpg",
+      "description": "Old Laptop optimization & Fixes."
+    }
+  ]
+}
