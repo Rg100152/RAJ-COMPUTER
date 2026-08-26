@@ -1,10 +1,24 @@
-# ◈ RAJ COMPUTER CENTER
+<p align="center">
+  <a href="https://github.com/Rg100152/RAJ-COMPUTER">
+    <img src="assets/logo.png" alt="Raj Computer Logo" width="200" height="200">
+  </a>
+</p>
+
+<h1 align="center">◈ RAJ COMPUTER CENTER</h1>
+
+<p align="center">
+  <b>A Futuristic EdTech Platform for Programming, Cyber Security & Reverse Engineering.</b>
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Active-brightgreen" alt="Status">
   <img src="https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20Tailwind-blue" alt="Tech">
   <img src="https://img.shields.io/badge/Admission-Multi--Step%20Form-purple" alt="Admission">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
+  <img src="https://img.shields.io/github/stars/Rg100152/RAJ-COMPUTER?style=social" alt="Stars">
 </p>
+
+---
 
 ## 🚀 About The Project
 
@@ -30,6 +44,35 @@ This platform is developed with a focus on practical learning, modern technology
 
 ---
 
+## 🖼️ Screenshots & Visuals
+
+### 🏠 Homepage (Hero Section)
+<img src="assets/screenshots/homepage.png" alt="Homepage Screenshot" width="800">
+
+### 🎓 Multi-Step Admission Form
+<img src="assets/screenshots/admission_form.png" alt="Admission Form Screenshot" width="800">
+
+### 👨‍💻 About the Developer Section
+<img src="assets/screenshots/developer_section.png" alt="Developer Section Screenshot" width="800">
+
+### 💻 Laptop & OS Lab
+<img src="assets/screenshots/os_lab.png" alt="OS Lab Screenshot" width="800">
+
+> **Note:** Above are placeholder images. Replace them with actual screenshots from your live website.
+
+---
+
+## 🧠 AI-Generated Assets
+
+This project leverages AI to create futuristic visuals and interfaces:
+
+- **AI-Generated UI Backgrounds**: Dark tech grid patterns.
+- **AI-Generated Logos**: The "RC" logo and branding elements.
+- **AI-Assisted Iconography**: Course icons and tech stack chips.
+- **AI-Driven Terminal Animations**: Simulated coding environments.
+
+---
+
 ## 🛠️ Built With
 
 - **HTML5** - Structure
@@ -37,6 +80,7 @@ This platform is developed with a focus on practical learning, modern technology
 - **JavaScript** - Dynamic Interactions, Counters, Terminal Typing
 - **Tailwind CSS** - Modern Utility-First CSS Framework (for alternate version)
 - **Google Fonts** - Orbitron, Poppins, JetBrains Mono
+- **AI Tools** - Visual generation & UI concepts
 
 ---
 
@@ -52,7 +96,15 @@ RAJ-COMPUTER/
 ├── developer.json          # Developer Profile Data
 ├── admissions.json         # Admission Form Flow Data
 ├── README.md               # Project Documentation
-└── images/
+├── assets/                 # All Media Files
+│   ├── logo.png            # Main Logo
+│   ├── screenshots/        # Website Screenshots
+│   │   ├── homepage.png
+│   │   ├── admission_form.png
+│   │   ├── developer_section.png
+│   │   └── os_lab.png
+│   └── icons/              # Course & Tech Icons
+└── images/                 # User Uploaded Images
     ├── html.png
     ├── python.jpg
     ├── c.png
