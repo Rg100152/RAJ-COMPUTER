@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission | Raj Computer Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --cyan: #00d4ff;
+            --purple: #9d00ff;
+            --text: #ffffff;
+            --muted: #a0a0a0;
+            --glass: rgba(30, 30, 30, 0.6);
+            --border: rgba(0, 212, 255, 0.3);
+            --glow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Background Grid */
+        #bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 10s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 40px 40px; } }
+
+        /* 1. Opening Screen */
+        #landing {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; transition: opacity 1s, transform 1s;
+        }
+        .landing-title { font-family: 'Orbitron'; font-size: 3rem; margin-bottom: 10px; color: var(--cyan); }
+        .landing-sub { color: var(--muted); margin-bottom: 40px; }
+        .apply-btn {
+            padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer;
+            font-family: 'Orbitron'; font-weight: 700; font-size: 1.1rem;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #fff; transition: 0.3s; box-shadow: var(--glow);
+        }
+        .apply-btn:hover { transform: translateY(-3px); box-shadow: 0 0 40px var(--cyan); }
+
+        /* 2. Multi-Step Form Container */
+        #form-container {
+            display: none; width: 100%; max-width: 700px; margin: 50px auto; padding: 20px;
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--border); border-radius: 20px;
+        }
+
+        /* Progress Bar */
+        .progress-track {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;
+            position: relative;
+        }
+        .progress-line {
+            position: absolute; top: 50%; left: 10%; right: 10%; height: 2px;
+            background: #333; transform: translateY(-50%); z-index: 0;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple));
+            width: 0%; transition: width 0.5s; 
+        }
+        .step-dot {
+            width: 30px; height: 30px; background: #222; border: 2px solid #444;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-family: 'JetBrains Mono'; font-size: 0.8rem; z-index: 1; transition: 0.5s;
+        }
+        .step-dot.active {
+            background: var(--cyan); border-color: var(--cyan); color: #000;
+            box-shadow: 0 0 15px var(--cyan);
+        }
+
+        /* Steps */
+        .step {
+            display: none; animation: slideIn 0.6s forwards;
+        }
+        .step.active { display: block; }
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .step-title { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 20px; text-align: center; }
+
+        /* Inputs & Floating Labels */
+        .input-group { position: relative; margin-bottom: 25px; }
+        input, select {
+            width: 100%; padding: 15px; background: transparent;
+            border: 1px solid #444; border-radius: 5px; color: var(--text);
+            font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+        label {
+            position: absolute; top: 15px; left: 15px; color: var(--muted);
+            font-size: 0.9rem; pointer-events: none; transition: 0.3s;
+        }
+        input:focus + label, input:not(:placeholder-shown) + label {
+            top: -10px; left: 10px; background: var(--charcoal); color: var(--cyan);
+            font-size: 0.7rem; padding: 0 5px;
+        }
+
+        /* Course Cards */
+        .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .course-card {
+            background: var(--glass); border: 2px solid #333; border-radius: 10px;
+            padding: 20px; cursor: pointer; text-align: center; transition: 0.4s;
+            position: relative;
+        }
+        .course-card:hover { border-color: var(--purple); }
+        .course-card.selected {
+            border-color: var(--cyan); transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        .course-card.selected::after {
+            content: '✓'; position: absolute; top: 10px; right: 10px;
+            background: var(--cyan); color: #000; width: 20px; height: 20px;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-weight: bold; animation: pop 0.3s;
+        }
+        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .course-price { color: var(--cyan); font-family: 'Orbitron'; margin-top: 10px; }
+
+        /* Sticky Mobile Buttons */
+        .actions {
+            display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .btn {
+            padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer;
+            font-family: 'Poppins'; font-weight: 600;
+        }
+        .btn-prev { background: #333; color: var(--text); }
+        .btn-next { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #fff; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Review Step */
+        .review-box { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .review-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #444; padding-bottom: 5px; }
+        .review-row span:last-child { color: var(--cyan); }
+
+        /* Payment & Documents */
+        .terminal-window {
+            background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px;
+            padding: 20px; font-family: 'JetBrains Mono'; text-align: center;
+        }
+        .payment-card { border: 2px solid var(--cyan); border-radius: 10px; padding: 20px; margin-bottom: 20px; text-align: center; }
+        .doc-upload {
+            border: 2px dashed #444; border-radius: 10px; padding: 20px; text-align: center;
+            margin-bottom: 15px; cursor: pointer; transition: 0.3s;
+        }
+        .doc-upload:hover { border-color: var(--cyan); }
+        .doc-upload.uploaded { border-color: var(--cyan); background: rgba(0,212,255,0.1); }
+
+        /* Final RG Logo Animation */
+        .logo-screen {
+            display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .rg-logo {
+            font-family: 'Orbitron'; font-size: 8rem; font-weight: 900; color: var(--cyan);
+            border: 5px solid var(--cyan); padding: 20px 40px; border-radius: 20px;
+            animation: logoGlow 2s infinite alternate;
+            transform: scale(0); animation: logoPop 1s forwards, logoGlow 2s infinite alternate 1s;
+        }
+        @keyframes logoPop { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes logoGlow { 0% { text-shadow: 0 0 10px var(--cyan); box-shadow: 0 0 20px rgba(0,212,255,0.2); } 100% { text-shadow: 0 0 40px var(--cyan); box-shadow: 0 0 40px rgba(0,212,255,0.5); } }
+        
+        .success-msg { font-family: 'Orbitron'; font-size: 2rem; margin-top: 20px; opacity: 0; animation: fadeIn 1s forwards 1s; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Validation & Shake */
+        .error { border-color: #ff5f56 !important; animation: shake 0.3s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .error-msg { color: #ff5f56; font-size: 0.8rem; margin-top: 5px; display: none; }
+        .success-msg-input { color: var(--cyan); font-size: 0.8rem; display: none; }
+
+        /* Toast for submission */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; background: var(--glass);
+            border-left: 4px solid var(--cyan); padding: 15px; border-radius: 5px;
+            transform: translateX(150%); transition: 0.5s; backdrop-filter: blur(10px);
+        }
+        .toast.show { transform: translateX(0); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .course-grid { grid-template-columns: 1fr; }
+            .step-title { font-size: 1.4rem; }
+            .progress-track { margin-bottom: 20px; }
+            .step-dot { width: 25px; height: 25px; font-size: 0.6rem; }
+            #form-container { margin: 20px; padding: 10px; }
+            .actions { position: sticky; bottom: 10px; background: var(--charcoal); padding: 10px; border-radius: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-grid"></div>
+
+    <!-- 1. Opening Screen -->
+    <div id="landing">
+        <h1 class="landing-title">RAJ COMPUTER</h1>
+        <p class="landing-sub">Learn • Practice • Build</p>
+        <button class="apply-btn" onclick="startForm()">APPLY NOW →</button>
+    </div>
+
+    <!-- 2. Multi-Step Form -->
+    <div id="form-container">
+        <div class="progress-track">
+            <div class="progress-line"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="step-dot active">1</div>
+            <div class="step-dot">2</div>
+            <div class="step-dot">3</div>
+            <div class="step-dot">4</div>
+            <div class="step-dot">5</div>
+        </div>
+
+        <!-- Step 1: Personal Info -->
+        <div class="step active" id="step-1">
+            <h2 class="step-title">01. Personal Information</h2>
+            <div class="input-group">
+                <input type="text" id="fullName" placeholder=" " required>
+                <label>Full Name</label>
+                <div class="error-msg">Please enter your name</div>
+            </div>
+            <div class="input-group">
+                <input type="date" id="dob" required>
+                <label style="top: -10px; left: 10px; background: var(--charcoal); font-size: 0.7rem; padding: 0 5px;">Date of Birth</label>
+            </div>
+            <div class="input-group">
+                <select id="gender">
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="tel" id="mobile" placeholder=" " required>
+                <label>Mobile Number</label>
+                <div class="error-msg">Enter valid 10-digit mobile</div>
+            </div>
+            <div class="input-group">
+                <input type="email" id="email" placeholder=" " required>
+                <label>Email</label>
+                <div class="error-msg">Enter valid email</div>
+            </div>
+        </div>
+
+        <!-- Step 2: Course Selection -->
+        <div class="step" id="step-2">
+            <h2 class="step-title">02. Choose Your Course</h2>
+            <div class="course-grid">
+                <div class="course-card" onclick="selectCourse('HTML & CSS', '₹199', this)">
+                    <h3>HTML + CSS</h3>
+                    <p style="color:var(--muted); font-size: 0.9rem;">Web Basics</p>
+                    <p class="course-price">₹199/month</p>
+                </div>
+                <div class="course-card" onclick="selectCourse('Python', '₹199', this)">
+                    <h3>🐍 Python</h3>
+                    <p style="color:var(--muted); font-size: 0.9rem;">Programming</p>
+                    <p class="course-price">₹199/month</p>
+                </div>
+                <div class="course-card" onclick="selectCourse('Full Stack', '₹399', this)">
+                    <h3>💻 Full Stack</h3>
+                    <p style="color:var(--muted); font-size: 0.9rem;">Web Dev Pro</p>
+                    <p class="course-price">₹399/month</p>
+                </div>
+                <div class="course-card" onclick="selectCourse('Cyber Pro', '₹599', this)">
+                    <h3>🛡️ Cyber Pro</h3>
+                    <p style="color:var(--muted); font-size: 0.9rem;">Security & RE</p>
+                    <p class="course-price">₹599/month</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Education -->
+        <div class="step" id="step-3">
+            <h2 class="step-title">03. Education Details</h2>
+            <div class="input-group">
+                <select id="qualification">
+                    <option value="">Highest Qualification</option>
+                    <option>10th</option>
+                    <option>12th</option>
+                    <option>Diploma</option>
+                    <option>Graduation</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="text" id="school" placeholder=" ">
+                <label>School / College Name</label>
+            </div>
+            <div class="input-group">
+                <input type="number" id="passYear" placeholder=" ">
+                <label>Passing Year</label>
+            </div>
+            <div class="input-group">
+                <select id="exp">
+                    <option value="">Programming Experience</option>
+                    <option>Beginner</option>
+                    <option>Basic</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 4: Contact -->
+        <div class="step" id="step-4">
+            <h2 class="step-title">04. Contact Information</h2>
+            <div class="input-group">
+                <input type="text" id="address" placeholder=" ">
+                <label>Address</label>
+            </div>
+            <div class="input-group">
+                <input type="text" id="city" placeholder=" ">
+                <label>City</label>
+            </div>
+            <div class="input-group">
+                <input type="text" id="pincode" placeholder=" ">
+                <label>PIN Code</label>
+            </div>
+        </div>
+
+        <!-- Step 5: Account -->
+        <div class="step" id="step-5">
+            <h2 class="step-title">05. Create Account</h2>
+            <div class="input-group">
+                <input type="text" id="username" placeholder=" ">
+                <label>Username</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder=" " oninput="checkStrength(this.value)">
+                <label>Password</label>
+                <div style="font-size: 0.8rem; color: var(--muted); margin-top:5px;">
+                    Strength: <span id="strengthText">Weak</span>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="password" id="confirmPass" placeholder=" ">
+                <label>Confirm Password</label>
+                <div class="error-msg">Passwords do not match</div>
+            </div>
+        </div>
+
+        <!-- Step 6: Review & Plan -->
+        <div class="step" id="step-6">
+            <h2 class="step-title">06. Review & Select Plan</h2>
+            <div class="payment-card">
+                <h3>RAJ COMPUTER PRO</h3>
+                <h2 style="font-size: 3rem; color: var(--cyan);">₹399<span style="font-size: 1rem;"> / month</span></h2>
+                <p style="color: var(--muted);">✓ All Courses | ✓ Projects | ✓ Labs | ✓ Certificates</p>
+                <button class="btn btn-next" style="margin-top: 15px;" onclick="changePlan()">CHANGE PLAN (Go Back to Course Selection)</button>
+            </div>
+
+            <div class="review-box">
+                <h3 style="margin-bottom: 15px;">Application Review</h3>
+                <div class="review-row"><span>Name</span><span id="revName"></span></div>
+                <div class="review-row"><span>Course</span><span id="revCourse"></span></div>
+                <div class="review-row"><span>Email</span><span id="revEmail"></span></div>
+                <div class="review-row"><span>Mobile</span><span id="revMobile"></span></div>
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="checkbox" id="confirmTerms">
+                <label for="confirmTerms">I confirm the provided information is correct.</label>
+            </div>
+        </div>
+
+        <!-- Step 7: Payment (Simulation) -->
+        <div class="step" id="step-7">
+            <h2 class="step-title">07. Complete Payment</h2>
+            <div class="terminal-window">
+                <p style="color: var(--cyan);">Payment Gateway</p>
+                <p>Securely processing your admission fee...</p>
+                <div class="review-box" style="margin-top: 20px; background: #111;">
+                    <div class="review-row"><span>Plan</span><span id="payPlan">Raj Computer Pro</span></div>
+                    <div class="review-row"><span>Amount</span><span>₹399 / month</span></div>
+                </div>
+                <button class="btn btn-next" onclick="processPayment()">PAY NOW →</button>
+            </div>
+        </div>
+
+        <!-- Step 8: Documents -->
+        <div class="step" id="step-8">
+            <h2 class="step-title">08. Upload Documents</h2>
+            <div class="doc-upload" onclick="uploadDoc(this, 'Identity')">
+                📄 Identity Document <br><small>[ Upload ]</small>
+            </div>
+            <div class="doc-upload" onclick="uploadDoc(this, 'Education')">
+                🎓 Education Certificate <br><small>[ Upload ]</small>
+            </div>
+            <div class="doc-upload" onclick="uploadDoc(this, 'Photo')">
+                📷 Profile Photo <br><small>[ Upload ]</small>
+            </div>
+            <center><button class="btn btn-next" onclick="finishAdmission()">SUBMIT APPLICATION</button></center>
+        </div>
+
+        <!-- Sticky Actions -->
+        <div class="actions">
+            <button class="btn btn-prev" id="btnPrev" onclick="prevStep()">← Back</button>
+            <button class="btn btn-next" id="btnNext" onclick="nextStep()">Continue →</button>
+        </div>
+    </div>
+
+    <!-- Final Logo Screen -->
+    <div class="logo-screen" id="finalLogo">
+        <div class="rg-logo">RG</div>
+        <div class="success-msg">Welcome to Raj Computer</div>
+        <p style="color: var(--muted); margin-top: 10px;">Application ID: <span id="appID" style="color: var(--cyan); font-family: 'JetBrains Mono';"></span></p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 20px;">Redirecting to Student Dashboard...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <strong>✓ Application Submitted!</strong><br>ID: <span id="toastID"></span>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 8;
+        let formData = {};
+
+        // Landing logic
+        function startForm() {
+            document.getElementById('landing').style.opacity = '0';
+            document.getElementById('landing').style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                document.getElementById('landing').style.display = 'none';
+                document.getElementById('form-container').style.display = 'block';
+            }, 500);
+        }
+
+        // Progress Bar Logic
+        function updateProgress() {
+            const fill = document.getElementById('progressFill');
+            const dots = document.querySelectorAll('.step-dot');
+            
+            fill.style.width = ((currentStep - 1) / (totalSteps - 1)) * 100 + '%';
+            
+            dots.forEach((dot, index) => {
+                if (index < currentStep) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Step Navigation
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            document.getElementById('btnPrev').disabled = step === 1;
+            
+            if (step === 6) { // Review Step populate data
+                document.getElementById('revName').innerText = formData.name || 'N/A';
+                document.getElementById('revCourse').innerText = formData.course || 'N/A';
+                document.getElementById('revEmail').innerText = formData.email || 'N/A';
+                document.getElementById('revMobile').innerText = formData.mobile || 'N/A';
+            }
+            
+            if (step === 8) {
+                document.getElementById('btnNext').style.display = 'none';
+            } else {
+                document.getElementById('btnNext').style.display = 'block';
+            }
+
+            updateProgress();
+        }
+
+        // Validation for Step 1
+        function validatePersonal() {
+            let valid = true;
+            const name = document.getElementById('fullName');
+            const mobile = document.getElementById('mobile');
+            const email = document.getElementById('email');
+
+            if (name.value.trim().length < 3) {
+                name.classList.add('error'); valid = false;
+            } else { name.classList.remove('error'); formData.name = name.value; }
+
+            if (mobile.value.length !== 10 || isNaN(mobile.value)) {
+                mobile.classList.add('error'); mobile.nextElementSibling.style.display = 'block'; valid = false;
+            } else { mobile.classList.remove('error'); mobile.nextElementSibling.style.display = 'none'; formData.mobile = mobile.value; }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                email.classList.add('error'); email.nextElementSibling.style.display = 'block'; valid = false;
+            } else { email.classList.remove('error'); email.nextElementSibling.style.display = 'none'; formData.email = email.value; }
+
+            return valid;
+        }
+
+        // Password Strength
+        function checkStrength(pass) {
+            let strength = 0;
+            if (pass.length > 5) strength++;
+            if (pass.length > 10) strength++;
+            if (/[!@#$%^&*()]/.test(pass)) strength++;
+
+            let text = document.getElementById('strengthText');
+            if (strength === 0) { text.innerText = "Weak"; text.style.color = "#ff5f56"; }
+            else if (strength === 1) { text.innerText = "Medium"; text.style.color = "#ffbd2e"; }
+            else { text.innerText = "Strong"; text.style.color = "#27c93f"; }
+        }
+
+        function nextStep() {
+            if (currentStep === 1) {
+                if (!validatePersonal()) return;
+            }
+            if (currentStep === 5) {
+                const pass = document.getElementById('password').value;
+                const conf = document.getElementById('confirmPass').value;
+                if (pass !== conf) {
+                    document.getElementById('confirmPass').classList.add('error');
+                    document.getElementById('confirmPass').nextElementSibling.style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('confirmPass').classList.remove('error');
+                    document.getElementById('confirmPass').nextElementSibling.style.display = 'none';
+                }
+            }
+            if (currentStep === 6) {
+                if (!document.getElementById('confirmTerms').checked) {
+                    alert("Please confirm the information before submitting.");
+                    return;
+                }
+            }
+
+            if (currentStep < 8) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        // Course Selection Logic
+        function selectCourse(courseName, price, element) {
+            formData.course = courseName;
+            formData.plan = "Raj Computer " + courseName;
+            
+            document.querySelectorAll('.course-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+
+            // Autofill review section
+            document.getElementById('payPlan').innerText = courseName + " (₹" + price.substring(1) + "/mo)";
+        }
+
+        function changePlan() {
+            currentStep = 2; // Go back to Step 2
+            showStep(2);
+        }
+
+        // Payment Simulation (Secure backend would verify this)
+        function processPayment() {
+            const btn = document.querySelector('#step-7 .btn-next');
+            btn.innerText = "PROCESSING...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const appID = "RC-2026-" + Math.floor(10000 + Math.random() * 90000);
+                formData.appID = appID;
+                document.getElementById('appID').innerText = appID;
+                document.getElementById('toastID').innerText = appID;
+                
+                // Show Toast
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 4000);
+
+                currentStep++;
+                showStep(currentStep); // Show Documents step
+            }, 2000);
+        }
+
+        // Document Upload
+        function uploadDoc(element, type) {
+            element.classList.add('uploaded');
+            element.innerHTML = type + "<br><span style='color: var(--cyan);'>✓ Uploaded</span>";
+            formData['doc_' + type] = true;
+        }
+
+        // Final Submission & Logo Animation
+        function finishAdmission() {
+            const btn = document.querySelector('#step-8 .btn-next');
+            btn.innerText = "SUBMITTING...";
+            
+            setTimeout(() => {
+                document.getElementById('form-container').style.display = 'none';
+                const logoSection = document.getElementById('finalLogo');
+                logoSection.style.display = 'flex';
+                // Timer to redirect to Dashboard (Simulated)
+                setTimeout(() => {
+                    alert("Redirecting to Student Dashboard... (Backend integration would go here)");
+                }, 3000);
+            }, 1500);
+        }
+
+        // Init
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raj Computer Center | Premium Tech Institute</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --charcoal: #121212;
+            --glass: rgba(30, 30, 30, 0.4);
+            --border: rgba(0, 212, 255, 0.3);
+            --cyan: #00d4ff;
+            --purple: #9d00ff;
+            --text: #ffffff;
+            --muted: #a0a0a0;
+            --glow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f5f5;
+            --charcoal: #ffffff;
+            --glass: rgba(255, 255, 255, 0.7);
+            --border: rgba(0, 0, 0, 0.1);
+            --text: #111111;
+            --muted: #555555;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        code { font-family: 'JetBrains Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loader-ring {
+            width: 100px; height: 100px; border: 2px solid transparent;
+            border-top: 2px solid var(--cyan); border-radius: 50%;
+            animation: spin 1s linear infinite; position: relative;
+        }
+        .loader-logo {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem; color: var(--cyan);
+        }
+        .loader-text { margin-top: 20px; font-family: 'JetBrains Mono'; color: var(--cyan); letter-spacing: 2px; font-size: 0.9rem; }
+        .loader-bar { width: 200px; height: 5px; background: #222; margin-top: 15px; border-radius: 5px; overflow: hidden; }
+        .loader-fill { width: 0%; height: 100%; background: var(--cyan); transition: width 0.2s; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Background */
+        #bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px; animation: gridMove 10s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 40px 40px; } }
+        
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.3; }
+        .particle { position: absolute; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan); animation: floatUp linear infinite; }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh); opacity: 0; } }
+
+        /* Navbar */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100; padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: transparent; transition: 0.3s;
+        }
+        nav.scrolled { background: var(--glass); backdrop-filter: blur(10px); padding: 10px 50px; border-bottom: 1px solid var(--border); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; color: var(--cyan); cursor: pointer; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text); font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+        .theme-switch { cursor: pointer; font-size: 1.2rem; }
+
+        /* Hero */
+        header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
+        .hero-title { font-size: 3.5rem; line-height: 1.2; margin-bottom: 20px; text-shadow: 0 0 30px rgba(0,212,255,0.3); }
+        .hero-accent { color: var(--cyan); }
+        .hero-subtitle { color: var(--muted); margin-bottom: 40px; font-family: 'JetBrains Mono'; }
+        .floating-code { position: absolute; font-family: 'JetBrains Mono'; color: var(--cyan); opacity: 0; animation: floatCode 8s ease-in-out infinite; }
+        @keyframes floatCode { 0% { opacity: 0; transform: translateY(20px); } 20% { opacity: 0.5; } 80% { opacity: 0.3; } 100% { opacity: 0; transform: translateY(-50px); } }
+
+        .btn {
+            padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer;
+            font-family: 'Orbitron'; font-weight: 700; font-size: 1rem;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #fff; position: relative; overflow: hidden; transition: 0.3s; text-decoration: none; display: inline-block;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px var(--cyan); }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent); transition: 0.5s; }
+        .btn:hover::before { left: 100%; }
+        .btn-outline { background: transparent; border: 2px solid var(--cyan); }
+        .btn-outline:hover { background: rgba(0,212,255,0.1); }
+
+        /* Sections */
+        section { padding: 80px 10%; }
+        .section-title { text-align: center; margin-bottom: 50px; font-size: 2.5rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 100px; height: 3px; margin: 10px auto; background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+
+        /* Terminal */
+        .terminal { width: 100%; max-width: 600px; margin: 50px auto; background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--glow); overflow: hidden; }
+        .term-header { background: #222; padding: 10px; display: flex; gap: 5px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-body { padding: 20px; font-family: 'JetBrains Mono'; font-size: 0.9rem; height: 150px; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: var(--cyan); animation: blink 0.8s infinite; }
+        @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+        /* Courses */
+        .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card {
+            background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border);
+            border-radius: 15px; padding: 30px; position: relative; overflow: hidden;
+            transition: transform 0.5s, box-shadow 0.5s;
+        }
+        .card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,212,255,0.1), transparent 50%); opacity: 0; transition: 0.5s; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow); }
+        .card:hover::before { opacity: 1; }
+        .card-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 10px; }
+
+        /* Cyber */
+        .cyber-section, .re-section { background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .radar { width: 200px; height: 200px; border: 2px solid var(--cyan); border-radius: 50%; position: relative; margin-bottom: 30px; overflow: hidden; }
+        .radar::before { content: ''; position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; background: var(--cyan); transform-origin: left; animation: sweep 2s linear infinite; }
+        @keyframes sweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hex-code { font-family: 'JetBrains Mono'; color: var(--cyan); word-spacing: 10px; font-size: 1.5rem; margin-bottom: 20px; text-shadow: 0 0 10px var(--cyan); opacity: 0.8; }
+
+        /* Stats */
+        .stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; text-align: center; }
+        .stat h3 { font-size: 3rem; color: var(--cyan); }
+        .stat p { color: var(--muted); }
+
+        /* Pricing */
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: center; }
+        .price-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 40px; text-align: center; position: relative; overflow: hidden; transition: 0.5s; }
+        .price-card.pro { border: 2px solid var(--cyan); transform: scale(1.05); background: linear-gradient(180deg, rgba(0,212,255,0.1), rgba(0,0,0,0.5)); box-shadow: 0 0 40px rgba(0,212,255,0.2); animation: breathe 3s infinite ease-in-out; }
+        @keyframes breathe { 0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.2); } 50% { box-shadow: 0 0 40px rgba(0,212,255,0.5); } }
+        .moving-border { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); animation: moveBorder 2s linear infinite; }
+        @keyframes moveBorder { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .popular-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--cyan); color: #000; font-weight: bold; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,212,255,0.5); }
+        .price { font-family: 'Orbitron'; font-size: 3rem; margin: 20px 0; }
+        .price span { font-size: 1rem; color: var(--muted); }
+        .features { list-style: none; margin-bottom: 30px; }
+        .features li { margin: 10px 0; color: var(--muted); }
+        .features li::before { content: '✓ '; color: var(--cyan); }
+
+        /* 👨‍💻 Developer Section */
+        #developer {
+            margin-bottom: 0; padding-bottom: 40px;
+        }
+        .dev-wrapper {
+            display: flex; align-items: center; gap: 50px; max-width: 1000px; margin: 0 auto;
+            background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border);
+            border-radius: 20px; padding: 50px; position: relative; overflow: hidden;
+        }
+        .dev-photo-box {
+            position: relative; width: 220px; height: 220px; flex-shrink: 0;
+        }
+        .dev-photo-box img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--cyan); box-shadow: 0 0 30px rgba(0,212,255,0.4);
+            transition: transform 0.5s;
+        }
+        .dev-photo-box:hover img { transform: scale(1.05); }
+        .rotating-ring {
+            position: absolute; top: -15px; left: -15px; width: 250px; height: 250px;
+            border: 2px dashed var(--purple); border-radius: 50%;
+            animation: rotate 15s linear infinite; z-index: 0; opacity: 0.6;
+        }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+        .dev-badge {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            background: var(--purple); color: #fff; font-size: 0.75rem; font-family: 'Orbitron';
+            padding: 5px 15px; border-radius: 20px; box-shadow: 0 0 20px var(--purple);
+            z-index: 2; animation: fadeGlow 2s infinite alternate;
+        }
+        @keyframes fadeGlow { 0% { box-shadow: 0 0 10px var(--purple); } 100% { box-shadow: 0 0 25px var(--purple); } }
+
+        .dev-text { flex: 1; }
+        .dev-text h3 { color: var(--cyan); margin-bottom: 5px; }
+        .dev-text .sub-title { color: var(--muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .dev-quote { color: var(--purple); font-family: 'JetBrains Mono'; margin-bottom: 15px; }
+        .dev-bio { color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; }
+
+        .tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .chip {
+            background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid var(--border);
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-family: 'JetBrains Mono';
+            transition: 0.3s; cursor: default;
+        }
+        .chip:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
+
+        .dev-stats { display: flex; gap: 30px; margin-bottom: 25px; }
+        .dev-stats .stat h3 { font-size: 2.2rem; }
+        .dev-buttons { display: flex; gap: 15px; }
+
+        .signature { text-align: center; margin-top: 40px; color: var(--muted); font-family: 'JetBrains Mono'; font-size: 0.9rem; }
+
+        /* Scroll Reveal */
+        .reveal { opacity: 0; transform: translateY(35px); filter: blur(6px); transition: all 0.8s; }
+        .reveal.active { opacity: 1; transform: translateY(0); filter: blur(0); }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            header { padding: 0 20px; }
+            .hero-title { font-size: 2rem; }
+            .floating-code { display: none; }
+            .price-card.pro { transform: scale(1); }
+            .dev-wrapper { flex-direction: column; text-align: center; padding: 30px; }
+            .dev-buttons { justify-content: center; }
+            .dev-stats { justify-content: center; }
+            .tech-stack { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="loader-ring">
+            <div class="loader-logo">RC</div>
+        </div>
+        <div class="loader-text">LEARN • BUILD • SECURE</div>
+        <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+    </div>
+
+    <!-- Background -->
+    <div id="bg-grid"></div>
+    <div id="particles"></div>
+
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="logo">◈ RAJ COMPUTER</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#courses">Courses</a></li>
+            <li><a href="#software-lab">Laptop & OS Lab</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#developer">About</a></li>
+            <li><a href="admission.html" style="color: var(--cyan); font-weight: bold;">Admissions</a></li>
+        </ul>
+        <div class="theme-switch" onclick="toggleTheme()">☾</div>
+    </nav>
+
+    <!-- Hero -->
+    <header id="hero">
+        <span class="floating-code" style="top: 20%; left: 10%;">print("Hello")</span>
+        <span class="floating-code" style="top: 60%; right: 15%; animation-delay: 2s;">#!/bin/bash</span>
+        <span class="floating-code" style="bottom: 20%; left: 20%; animation-delay: 4s;">java Main.java</span>
+        <span class="floating-code" style="top: 40%; right: 5%; animation-delay: 6s;">gcc program.c</span>
+
+        <h1 class="hero-title">Learn Technology.<br>Build Your <span class="hero-accent">Future.</span></h1>
+        <p class="hero-subtitle">Programming • Web • Cyber Security • Reverse Engineering</p>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn" onclick="document.getElementById('courses').scrollIntoView()">Explore Courses</button>
+            <a href="admission.html" class="btn btn-outline">Apply Now →</a>
+        </div>
+    </header>
+
+    <!-- Terminal -->
+    <div class="container" style="max-width: 800px; margin: 0 auto;">
+        <div class="terminal reveal">
+            <div class="term-header">
+                <div class="term-dot" style="background: #ff5f56;"></div>
+                <div class="term-dot" style="background: #ffbd2e;"></div>
+                <div class="term-dot" style="background: #27c93f;"></div>
+                <div style="margin-left: 10px; font-size: 0.8rem; color: #888;">raj@computer-lab: ~</div>
+            </div>
+            <div class="term-body" id="terminalBody">
+                <span class="cursor">_</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses -->
+    <section id="courses">
+        <h2 class="section-title reveal">Our Tech Arsenal</h2>
+        <div class="course-grid">
+            <div class="card reveal" style="transition-delay: 0s;">
+                <img src="html.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=200&h=200&fit=crop';" class="card-img" alt="HTML">
+                <h3>HTML & CSS</h3>
+                <p>Modern responsive web layouts.</p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 72%;"></div></div>
+                <small>Beginner</small>
+            </div>
+
+            <div class="card reveal" style="transition-delay: 80ms;">
+                <img src="python.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=200&h=200&fit=crop';" class="card-img" alt="Python">
+                <h3>Python</h3>
+                <p>Data Science & Automation.</p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 85%;"></div></div>
+                <small>Intermediate</small>
+            </div>
+
+            <div class="card reveal" style="transition-delay: 160ms;">
+                <img src="shell script.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=200&h=200&fit=crop';" class="card-img" alt="Shell">
+                <h3>Shell Scripting</h3>
+                <p>Master Linux terminal & automation.</p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+                <small>Advanced</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- Laptop & OS Lab -->
+    <section id="software-lab" class="cyber-section reveal">
+        <h2 class="section-title">Laptop & OS Lab</h2>
+        <p style="max-width: 600px; margin-bottom: 40px;">Learn complete hardware & software installation, OS migration, and system recovery.</p>
+        
+        <div class="course-grid">
+            <div class="card">
+                <img src="windows 11.png.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=300&fit=crop';" class="card-img" alt="Windows 11">
+                <h3>Windows 11 Pro</h3>
+                <p>Advanced OS Setup & Config.</p>
+            </div>
+            <div class="card">
+                <img src="ghost 11 interface.png.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=400&h=300&fit=crop';" class="card-img" alt="Ghost OS">
+                <h3>Ghost OS</h3>
+                <p>Custom lightweight OS & Backups.</p>
+            </div>
+            <div class="card">
+                <img src="hp laptop.png.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop';" class="card-img" alt="HP Laptop">
+                <h3>HP Laptop Setup</h3>
+                <p>Hardware & Driver Mastery.</p>
+            </div>
+            <div class="card">
+                <img src="Dell old.png.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop';" class="card-img" alt="Dell Laptop">
+                <h3>Dell Legacy</h3>
+                <p>Old Laptop optimization & Fixes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section>
+        <h2 class="section-title reveal">Our Impact</h2>
+        <div class="stats reveal">
+            <div class="stat"><h3 data-target="10">0</h3><p>Courses</p></div>
+            <div class="stat"><h3 data-target="100">0</h3><p>Lessons</p></div>
+            <div class="stat"><h3 data-target="50">0</h3><p>Labs</p></div>
+            <div class="stat"><h3 data-target="1000">0</h3><p>Students</p></div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing">
+        <h2 class="section-title reveal">Premium Pricing</h2>
+        <div class="pricing-grid reveal">
+            <div class="price-card">
+                <h3>BASIC</h3>
+                <div class="price" data-target="199">₹0<span>/month</span></div>
+                <ul class="features">
+                    <li>Core Courses</li>
+                    <li>Basic Labs</li>
+                    <li>Certificates</li>
+                </ul>
+                <a href="admission.html" class="btn btn-outline">Get Started</a>
+            </div>
+
+            <div class="price-card pro">
+                <div class="moving-border"></div>
+                <div class="popular-badge">✦ MOST POPULAR ✦</div>
+                <h3>PRO</h3>
+                <div class="price" data-target="399">₹0<span>/month</span></div>
+                <ul class="features">
+                    <li>All Courses Access</li>
+                    <li>Advanced Cyber Labs</li>
+                    <li>Real-time Projects</li>
+                    <li>Priority Support</li>
+                </ul>
+                <a href="admission.html" class="btn">Start Learning</a>
+            </div>
+
+            <div class="price-card">
+                <h3>CYBER PRO</h3>
+                <div class="price" data-target="599">₹0<span>/month</span></div>
+                <ul class="features">
+                    <li>Reverse Engineering</li>
+                    <li>Network Security</li>
+                    <li>Shell Mastery</li>
+                </ul>
+                <a href="admission.html" class="btn btn-outline">Enroll</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 👨‍💻 About the Developer Section -->
+    <section id="developer">
+        <h2 class="section-title reveal">About the Developer</h2>
+        <div class="dev-wrapper reveal" id="devWrapper">
+            <div class="dev-photo-box">
+                <div class="rotating-ring"></div>
+                <!-- Apni photo ka naam 'profile.jpg' rakhein ya src change karein -->
+                <img src="profile.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop';" alt="Developer Photo">
+                <div class="dev-badge">DEVELOPER</div>
+            </div>
+            
+            <div class="dev-text">
+                <h3>RAJ COMPUTER</h3>
+                <p class="sub-title">Developer • Programmer • Tech Learner</p>
+                <p class="dev-quote">“Learning technology by building it.”</p>
+                <p class="dev-bio">
+                    Raj Computer is developed and maintained with a focus on programming, computer science, practical learning and modern technology. The platform is designed to help students learn by combining structured courses, interactive practice, projects and hands-on labs.
+                </p>
+                
+                <div class="tech-stack">
+                    <span class="chip">HTML</span>
+                    <span class="chip">CSS</span>
+                    <span class="chip">JavaScript</span>
+                    <span class="chip">Python</span>
+                    <span class="chip">Java</span>
+                    <span class="chip">C</span>
+                    <span class="chip">C++</span>
+                    <span class="chip">Linux</span>
+                    <span class="chip">Cyber Security</span>
+                </div>
+
+                <div class="dev-stats">
+                    <div class="stat">
+                        <h3 data-target="175">0</h3>
+                        <p>Open Projects</p>
+                    </div>
+                    <div class="stat">
+                        <h3 data-target="12">0</h3>
+                        <p>Technologies Learning</p>
+                    </div>
+                </div>
+
+                <div class="dev-buttons">
+                    <a href="#" class="btn btn-outline">GitHub</a>
+                    <a href="#" class="btn btn-outline">Projects</a>
+                    <a href="#" class="btn btn-outline">Contact</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="signature reveal">
+            ────────────────────────────<br>
+            Built with curiosity. Powered by code.<br>— Raj Computer<br>
+            ────────────────────────────
+        </div>
+    </section>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <strong>✦ ACHIEVEMENT UNLOCKED</strong><br>
+        Python Beginner [ ✓ ]
+    </div>
+
+    <footer style="text-align: center; padding: 50px; border-top: 1px solid var(--border); background: var(--charcoal);">
+        <p style="font-family: 'Orbitron'; color: var(--cyan);">RAJ COMPUTER CENTER</p>
+        <p style="color: var(--muted); font-size: 0.8rem;">© 2026 | Futuristic Learning Platform</p>
+    </footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            let loaderBar = document.getElementById('loaderFill');
+            let width = 0;
+            let loadInterval = setInterval(() => {
+                width += Math.random() * 20;
+                if(width >= 100) { width = 100; clearInterval(loadInterval);
+                    setTimeout(() => {
+                        document.getElementById('loading').style.transition = 'opacity 1s';
+                        document.getElementById('loading').style.opacity = '0';
+                        setTimeout(() => document.getElementById('loading').remove(), 1000);
+                    }, 500);
+                }
+                loaderBar.style.width = width + '%';
+            }, 150);
+        });
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.querySelector('.theme-switch').innerText = newTheme === 'dark' ? '☾' : '☀';
+        }
+
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) { entry.target.classList.add('active'); revealObserver.unobserve(entry.target); }
+            });
+        }, { threshold: 0.1 });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        const statElements = document.querySelectorAll('[data-target]');
+        const animateCounters = (el) => {
+            const target = +el.getAttribute('data-target');
+            const duration = 2000; const increment = target / (duration / 50);
+            const timer = setInterval(() => {
+                const current = +el.innerText.replace(/[^0-9]/g, '');
+                if(current < target) { el.innerText = Math.ceil(current + increment); }
+                else { el.innerText = target; clearInterval(timer); }
+            }, 50);
+        };
+        
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) { animateCounters(entry.target); counterObserver.unobserve(entry.target); }
+            });
+        }, { threshold: 0.5 });
+        statElements.forEach(el => counterObserver.observe(el));
+
+        const terminalTexts = [
+            "> python3 hello.py", "> Hello, Raj Computer!",
+            "> gcc program.c -o output", "> ./output",
+            "> Shell Scripting Ready...", "> $ "
+        ];
+        let textIndex = 0, charIndex = 0;
+        const terminalBody = document.getElementById('terminalBody');
+
+        function typeTerminal() {
+            if(textIndex < terminalTexts.length) {
+                let currentText = terminalTexts[textIndex];
+                if (charIndex < currentText.length) {
+                    terminalBody.innerHTML = currentText.substring(0, charIndex + 1) + '<span class="cursor">_</span>';
+                    charIndex++; setTimeout(typeTerminal, 50);
+                } else {
+                    charIndex = 0; textIndex++; setTimeout(typeTerminal, 1000);
+                }
+            } else {
+                setTimeout(() => { textIndex = 0; charIndex = 0; typeTerminal(); }, 3000);
+            }
+        }
+        typeTerminal();
+
+        const hexTexts = [
+            "48 8B 05 00 00 55 48 89 E5 48 83 EC 20",
+            "MOV RAX, [RIP]", "PUSH RBP", "MOV RBP, RSP"
+        ];
+        let hexIndex = 0;
+        const hexPreview = document.getElementById('hexPreview');
+        setInterval(() => {
+            hexPreview.style.opacity = '0';
+            setTimeout(() => {
+                hexIndex = (hexIndex + 1) % hexTexts.length;
+                hexPreview.innerText = hexTexts[hexIndex];
+                hexPreview.style.opacity = '0.8';
+            }, 500);
+        }, 3000);
+
+        setTimeout(() => {
+            document.getElementById('toast').classList.add('show');
+            setTimeout(() => document.getElementById('toast').classList.remove('show'), 4000);
+        }, 5000);
+
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.bottom = '-10px';
+            particle.style.animationDuration = (5 + Math.random() * 5) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.width = particle.style.height = (2 + Math.random() * 3) + 'px';
+            particleContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
